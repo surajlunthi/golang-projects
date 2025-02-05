@@ -27,7 +27,14 @@ func main(){
 		log.Panic(err)
 	}
 	fmt.Println("byte array",bs)
-	fmt.Println(string(bs))
+	fmt.Println("print json ",string(bs))
 
+	v := []person{};
 
+	err = json.Unmarshal(bs,&v);
+
+	if err!=nil{
+		log.Panic("error in Unmarshal json",err)
+	}
+	fmt.Print(v);
 }
