@@ -2,39 +2,35 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
+	"net/http"
 )
 
 type person struct {
-First string
+	First string
 }
 
-func main(){
+func main() {
 
+	http.HandleFunc("/encode", foo)
+	http.HandleFunc("/decode", bar)
+	http.ListenAndServe(":8081", nil)
+}
+
+func foo(w http.ResponseWriter, r *http.Request) {
 	p1 := person{
-		First : "jenny",
+		First: "jenny",
 	}
-	p2 := person{
-		First:"James",
+	err := json.NewEncoder(w).Encode(p1)
+	if err != nil {
+		log.Println("Encode bad data :", err)
 	}
-
-	xp := []person{p1, p2}
-
-	bs,err := json.Marshal(xp)
-
-	if err!=nil{
-		log.Panic(err)
+}
+func bar(w http.ResponseWriter, r *http.Request) {
+	var p1 person
+	err := json.NewDecoder(r.Body).Decode(&p1)
+	if err != nil {
+		log.Println(err)
 	}
-	fmt.Println("byte array",bs)
-	fmt.Println("print json ",string(bs))
-
-	v := []person{};
-
-	err = json.Unmarshal(bs,&v);
-
-	if err!=nil{
-		log.Panic("error in Unmarshal json",err)
-	}
-	fmt.Print(v);
+	log.Println("Person ", p1)
 }
